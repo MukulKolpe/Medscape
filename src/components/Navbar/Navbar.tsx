@@ -33,13 +33,10 @@ export default function Navbar() {
 
   const signIn = () => {
     const authstate = auth?.signIn();
-    let wallet = "";
     authstate.then((res) => {
       setUserId(res.userId);
+      setloggedIn(true);
     });
-
-    console.log(userId);
-    setloggedIn(true);
   };
   console.log(userId);
   const signOut = () => {
