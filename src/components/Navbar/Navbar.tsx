@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   Box,
   Flex,
@@ -14,17 +15,37 @@ import {
   Stack,
   Icon,
 } from "@chakra-ui/react";
+import { Auth } from "@polybase/auth";
 import { HamburgerIcon, CloseIcon, AddIcon } from "@chakra-ui/icons";
-// import { useAuth } from "@polybase/react";
-// import { CgProfile } from "react-icons/cg";
-// import Avatar from "avataaars";
-// import { generateRandomAvatarOptions } from "../../utils/avatar";
-// import { px } from "framer-motion";
+import { useAuth } from "@polybase/react";
+import { CgProfile } from "react-icons/cg";
+import Avatar from "avataaars";
+import { generateRandomAvatarOptions } from "../../utils/avatar";
+import { px } from "framer-motion";
 import { Link } from "@chakra-ui/next-js";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  // const { auth, state } = useAuth();
+  const { state } = useAuth();
+  const [loggedIn, setloggedIn] = useState(false);
+  const [userId, setUserId] = useState("");
+  const auth = typeof window !== "undefined" ? new Auth() : null;
+
+  const signIn = () => {
+    const authstate = auth?.signIn();
+    let wallet = "";
+    authstate.then((res) => {
+      setUserId(res.userId);
+    });
+
+    console.log(userId);
+    setloggedIn(true);
+  };
+  console.log(userId);
+  const signOut = () => {
+    auth?.signOut();
+    setloggedIn(false);
+  };
 
   return (
     <>
@@ -79,8 +100,7 @@ export default function Navbar() {
                 </Link>
               </HStack>
             </div>
-
-            {/* {state == null ? (
+            {!loggedIn ? (
               <Button
                 display="flex"
                 flexDir="row"
@@ -89,7 +109,7 @@ export default function Navbar() {
                 size={"sm"}
                 mr={4}
                 leftIcon={<Icon as={CgProfile} boxSize={6} />}
-                onClick={() => auth.signIn() && navigate("/profile")}
+                onClick={signIn}
               >
                 Sign In
               </Button>
@@ -114,36 +134,33 @@ export default function Navbar() {
                 </MenuButton>
                 <MenuList>
                   <MenuItem>
-                    Welcome,{" "}
-                    {state.userId.slice(0, 4) + "..." + state.userId.slice(-4)}
+                    Welcome, {userId.slice(0, 4) + "..." + userId.slice(-4)}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem as={Link} to="/profile">
-                    Profile
-                  </MenuItem>
+                  <MenuItem to="/profile">Profile</MenuItem>
                   <MenuDivider />
-                  <MenuItem onClick={() => auth.signOut()}>Sign Out</MenuItem>
+                  <MenuItem onClick={signOut}>Sign Out</MenuItem>
                 </MenuList>
               </Menu>
-            )} */}
+            )}
           </Flex>
         </Flex>
 
         {isOpen ? (
           <Box pb={4} display={{ md: "none" }}>
             <Stack as={"nav"} spacing={4}>
-              <Link href="/profile">
-                <Button w="full" variant="ghost">
-                  Profile
-                </Button>
-              </Link>
+              {/* <Link href="/profile"> */}
+              <Button w="full" variant="ghost">
+                Profile
+              </Button>
+              {/* </Link> */}
             </Stack>
             <Stack as={"nav"} spacing={4}>
-              <Link href="/book">
-                <Button w="full" variant="ghost">
-                  Book Appointment
-                </Button>
-              </Link>
+              {/* <Link href="/book"> */}
+              <Button w="full" variant="ghost">
+                Book Appointment
+              </Button>
+              {/* </Link> */}
             </Stack>
           </Box>
         ) : null}
