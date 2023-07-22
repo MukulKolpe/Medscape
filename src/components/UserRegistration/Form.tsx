@@ -294,11 +294,11 @@ export default function Multistep() {
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [bloodGrp, setBloodGrp] = useState("");
-  const [diabetes, setDiabetes] = useState();
+  const [diabetes, setDiabetes] = useState(true);
   const [adharNo, setAdharNo] = useState("");
   const [date, setDate] = useState("");
-  const [disablilities, setDisabilities] = useState();
-  const [bloodPressure, setBloodPressure] = useState();
+  const [disablilities, setDisabilities] = useState(true);
+  const [bloodPressure, setBloodPressure] = useState(true);
 
   console.log("disabilities", disablilities);
 
