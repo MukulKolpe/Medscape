@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { ethers } from "ethers";
+import usersideabi from "../../utils/usersideabi.json";
 import {
   Progress,
   Box,
@@ -302,6 +304,39 @@ export default function Multistep() {
 
   console.log("disabilities", disablilities);
 
+  const handleSubmit = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      "0x353cefb7f0a4B01e88D4C6d772FE9e5FA808DFDf",
+      usersideabi,
+      signer
+    );
+    const tx = await contract.createUser(
+      name,
+      email,
+      adharNo,
+      gender,
+      age,
+      bloodGrp,
+      date,
+      diabetes,
+      bloodPressure,
+      disablilities
+    );
+
+    await tx.wait();
+
+    toast({
+      title: "Account created.",
+      description: "Confratulations 🎉 you just completed your profile",
+      status: "success",
+      duration: 3000,
+      isClosable: true,
+      position: "top-right",
+    });
+  };
+
   return (
     <>
       <Box
@@ -379,15 +414,7 @@ export default function Multistep() {
                 colorScheme="red"
                 variant="solid"
                 onClick={() => {
-                  toast({
-                    title: "Account created.",
-                    description:
-                      "Confratulations 🎉 you just completed your profile",
-                    status: "success",
-                    duration: 3000,
-                    isClosable: true,
-                    position: "top-right",
-                  });
+                  handleSubmit();
                 }}
               >
                 Submit
