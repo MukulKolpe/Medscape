@@ -23,6 +23,7 @@
     "avataaars": "^2.0.0",
     "eslint": "8.45.0",
     "eslint-config-next": "13.4.11",
+    "ethers": "5.6.1",
     "framer-motion": "^10.13.0",
     "next": "13.4.11",
     "react": "18.2.0",
