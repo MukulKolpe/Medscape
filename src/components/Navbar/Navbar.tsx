@@ -1,4 +1,7 @@
 import { useState } from "react";
+import { ethers } from "ethers";
+import usersideabi from "../../utils/usersideabi.json";
+import { useRouter } from "next/router";
 import {
   Box,
   Flex,
@@ -30,15 +33,30 @@ export default function Navbar() {
   const [loggedIn, setloggedIn] = useState(false);
   const [userId, setUserId] = useState("");
   const auth = typeof window !== "undefined" ? new Auth() : null;
+  const router = useRouter();
 
   const signIn = () => {
     const authstate = auth?.signIn();
     authstate.then((res) => {
       setUserId(res.userId);
       setloggedIn(true);
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      const contract = new ethers.Contract(
+        "0x353cefb7f0a4B01e88D4C6d772FE9e5FA808DFDf",
+        usersideabi,
+        signer
+      );
+      contract.checkPatientRegistered(res.userId).then((res) => {
+        if (res) {
+          router.push("/");
+        } else {
+          router.push("/user-registration");
+        }
+      });
     });
   };
-  console.log(userId);
+
   const signOut = () => {
     auth?.signOut();
     setloggedIn(false);
