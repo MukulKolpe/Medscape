@@ -53,19 +53,20 @@ const Form1 = ({ getName, getEmail, getAge }) => {
       </Heading>
       <Flex>
         <FormControl mr="5%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="name" fontWeight={"normal"}>
             Name
           </FormLabel>
           <Input
-            id="first-name"
+            id="name"
             placeholder="Enter your name"
+            autoComplete="name"
             onChange={(e) => handleName(e.target.value)}
           />
         </FormControl>
       </Flex>
       <Flex>
         <FormControl mr="5%" mt="2%">
-          <FormLabel htmlFor="email" fontWeight={"normal"}>
+          <FormLabel htmlFor="age" fontWeight={"normal"}>
             Age
           </FormLabel>
           <NumberInput
@@ -84,12 +85,12 @@ const Form1 = ({ getName, getEmail, getAge }) => {
       </Flex>
       <Flex>
         <FormControl mr="5%" mt="3%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="email" fontWeight={"normal"}>
             Email
           </FormLabel>
           <Input
-            id="first-name"
-            placeholder="Enter your email"
+            id="email"
+            placeholder="user@email.com"
             onChange={(e) => handleEmail(e.target.value)}
           />
         </FormControl>
@@ -121,7 +122,7 @@ const Form2 = ({ getBloodGrp, getGender, getAdharNo, getDate }) => {
       </Heading>
       <FormControl>
         <FormLabel
-          htmlFor="country"
+          htmlFor="gender"
           fontSize="sm"
           fontWeight="md"
           color="gray.700"
@@ -132,9 +133,8 @@ const Form2 = ({ getBloodGrp, getGender, getAdharNo, getDate }) => {
           Gender
         </FormLabel>
         <Select
-          id="country"
-          name="country"
-          autoComplete="country"
+          id="gender"
+          name="gender"
           placeholder="Select option"
           focusBorderColor="brand.400"
           shadow="sm"
@@ -150,11 +150,11 @@ const Form2 = ({ getBloodGrp, getGender, getAdharNo, getDate }) => {
       </FormControl>
       <Flex>
         <FormControl mr="5%" mt="2%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="b-group" fontWeight={"normal"}>
             Blood Group
           </FormLabel>
           <Input
-            id="first-name"
+            id="b-group"
             placeholder="Enter your blood grp"
             onChange={(e) => handleBloodgrp(e.target.value)}
           />
@@ -162,12 +162,12 @@ const Form2 = ({ getBloodGrp, getGender, getAdharNo, getDate }) => {
       </Flex>
       <Flex>
         <FormControl mr="5%" mt="2%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
-            Adhar Number
+          <FormLabel htmlFor="aadhar-card" fontWeight={"normal"}>
+            Aadhar Number
           </FormLabel>
           <Input
-            id="first-name"
-            placeholder="Enter your blood grp"
+            id="aadhar-card"
+            placeholder="Enter your Aadhar card number"
             onChange={(e) => handleAdharNo(e.target.value)}
           />
         </FormControl>
@@ -210,7 +210,7 @@ const Form3 = ({ getBloodPressure, getDiabetes, getDisabilities }) => {
       </Heading>
       <Flex>
         <FormControl mr="5%" mt="4%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="diabetes" fontWeight={"normal"}>
             Are you diagnosed with diabetes ?
           </FormLabel>
           <RadioGroup defaultValue="2">
@@ -235,7 +235,7 @@ const Form3 = ({ getBloodPressure, getDiabetes, getDisabilities }) => {
       </Flex>
       <Flex>
         <FormControl mr="5%" mt="4%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="disablilities" fontWeight={"normal"}>
             Do you have any disablilities ?
           </FormLabel>
           <RadioGroup defaultValue="2">
@@ -260,7 +260,7 @@ const Form3 = ({ getBloodPressure, getDiabetes, getDisabilities }) => {
       </Flex>
       <Flex>
         <FormControl mr="5%" mt="4%">
-          <FormLabel htmlFor="first-name" fontWeight={"normal"}>
+          <FormLabel htmlFor="bp" fontWeight={"normal"}>
             Are you diagnosed with high blood pressure ?
           </FormLabel>
           <RadioGroup defaultValue="2">
@@ -329,7 +329,7 @@ export default function Multistep() {
 
     toast({
       title: "Account created.",
-      description: "Confratulations 🎉 you just completed your profile",
+      description: "Congratulations 🎉 you just completed your profile",
       status: "success",
       duration: 3000,
       isClosable: true,

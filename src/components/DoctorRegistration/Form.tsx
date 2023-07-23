@@ -44,7 +44,7 @@ const Form1 = () => {
         <FormLabel htmlFor="name" fontWeight={"normal"}>
           Name
         </FormLabel>
-        <Input id="first-name" placeholder="Name" autoComplete="name" />
+        <Input id="name" placeholder="Name" autoComplete="name" />
       </FormControl>
 
       <FormControl mt="2%">
@@ -54,7 +54,7 @@ const Form1 = () => {
         <Input
           id="email"
           type="email"
-          placeholder="doctor@gmail.com"
+          placeholder="doctor@email.com"
           autoComplete="email"
         />
         <FormHelperText>We'll never share your email.</FormHelperText>
@@ -109,7 +109,7 @@ const Form2 = () => {
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
-        User Details
+        Personal Details
       </Heading>
 
       <FormControl mt="2%">
@@ -232,7 +232,7 @@ const Form3 = () => {
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal">
-        Social Handles
+        Professional Details
       </Heading>
       <SimpleGrid columns={1} spacing={6}>
         <FormControl mt="2%">
@@ -331,7 +331,7 @@ const Form3 = () => {
         </FormControl>
         <FormControl>
           <FormLabel
-            htmlFor="country"
+            htmlFor="specialization"
             fontSize="sm"
             fontWeight="md"
             color="gray.700"
@@ -448,7 +448,8 @@ export default function Multistep() {
                 onClick={() => {
                   toast({
                     title: "Account created.",
-                    description: "We've created your account for you.",
+                    description:
+                      "Congratulations 🎉 your details are submitted, we'll get back to you soon!",
                     status: "success",
                     duration: 3000,
                     isClosable: true,
