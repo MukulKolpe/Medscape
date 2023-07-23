@@ -26,19 +26,21 @@ import Avatar from "avataaars";
 import { generateRandomAvatarOptions } from "../../utils/avatar";
 import { px } from "framer-motion";
 import { Link } from "@chakra-ui/next-js";
+import { useIsAuthenticated } from "@polybase/react";
 
 export default function Navbar() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { state } = useAuth();
   const [loggedIn, setloggedIn] = useState(false);
   const [userId, setUserId] = useState("");
-  const auth = typeof window !== "undefined" ? new Auth() : null;
+  const { auth, state, loading } = useAuth();
+  const [isLoggedIn] = useIsAuthenticated();
+
   const router = useRouter();
 
   const signIn = () => {
-    const authstate = auth?.signIn();
+    const authstate = auth.signIn();
     authstate.then((res) => {
-      setUserId(res.userId);
+      setUserId(state?.userId);
       setloggedIn(true);
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner();
@@ -58,8 +60,7 @@ export default function Navbar() {
   };
 
   const signOut = () => {
-    auth?.signOut();
-    setloggedIn(false);
+    auth.signOut();
   };
 
   return (
@@ -115,7 +116,7 @@ export default function Navbar() {
                 </Link>
               </HStack>
             </div>
-            {!loggedIn ? (
+            {!isLoggedIn ? (
               <Button
                 display="flex"
                 flexDir="row"
@@ -149,7 +150,8 @@ export default function Navbar() {
                 </MenuButton>
                 <MenuList>
                   <MenuItem>
-                    Welcome, {userId.slice(0, 4) + "..." + userId.slice(-4)}
+                    Welcome,{" "}
+                    {state.userId.slice(0, 4) + "..." + state.userId.slice(-4)}
                   </MenuItem>
                   <MenuDivider />
                   <MenuItem to="/profile">Profile</MenuItem>
