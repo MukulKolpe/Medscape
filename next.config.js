@@ -4,6 +4,9 @@ const nextConfig = {
   typescript: {
     ignoreBuildErrors: true,
   },
+  images: {
+    domains: ['images.unsplash.com','ipfs.io'],
+  },
 };
 
 module.exports = nextConfig;
