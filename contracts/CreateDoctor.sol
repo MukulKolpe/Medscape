@@ -28,21 +28,34 @@ contract CreateDoctor{
     }
 
     function getDoctorByIndex(uint256 index) public view returns (Doctor) {
+        require(index < _doctors.length,"The index is out of bounds");
         return _doctors[index];
     }
     
     function getVerifiedDoctorByIndex(uint256 index) public view returns (Doctor) {
+        require(index < _verifiedDoctors.length,"The index is out of bounds");
         return _verifiedDoctors[index];
     }
 
     function verifyDoctor(uint256 index) public {
         require(msg.sender == owner,"Only admin can call this function");
+        require(index < _doctors.length,"The index is out of bounds");
         Doctor d1 = Doctor(_doctors[index]);
         d1.verifyDoctor(true);
         _verifiedDoctors.push(_doctors[index]);
         _doctors[index] = _doctors[_doctors.length - 1];
         _doctors.pop();
-    }   
+    }  
+
+    function unverifyDoctor(uint256 index) public {
+        require(msg.sender == owner,"Only admin can call this function");
+        require(index < _verifiedDoctors.length,"The index is out of bounds");
+        Doctor d1 = Doctor(_verifiedDoctors[index]);
+        d1.verifyDoctor(false);
+        _doctors.push(_verifiedDoctors[index]);
+        _verifiedDoctors[index] = _verifiedDoctors[_verifiedDoctors.length - 1];
+        _verifiedDoctors.pop();
+    } 
 
     function doctors(uint256 limit,uint256 offset) public view returns (Doctor[] memory coll) {
         //logic for pagination
