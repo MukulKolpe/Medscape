@@ -1,7 +1,147 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import doctorabi from "../../utils/doctorabi.json";
+import createdoctorabi from "../../utils/createdoctorabi.json";
+import { Grid, GridItem, Center, Button,Flex,Stack,useColorModeValue,Image,Heading,FormControl,FormLabel,Input } from "@chakra-ui/react";
+import DoctorCard from "@/components/DoctorCard/DoctorCard";
+import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
+import { get } from "http";
+import LockSVG from "../../assets/lock-svgrepo-com.svg";
+import { Auth } from "@polybase/auth";
+var doctorArray: any = [];
 
 const Admin = () => {
-  return <div>Admin</div>;
+  const [totalUnverifiedDoctors, setTotalUnverifiedDoctors] = useState(0);
+  const [unverifiedDoctors, setUnverifiedDoctors] = useState([]);
+  const [showCards, setShowCards] = useState(false);
+  const [checkAdmin, setChecked] = useState(false);
+  const [userWalletAddress, setUserWalletAddress] = useState("");
+  const [loggedIn, setloggedIn] = useState(false);
+  const [owner,setOwner] = useState("");
+  const [password, setPassword] = useState("");
+  const auth = typeof window !== "undefined" ? new Auth() : null;
+
+
+  const getAllDoctors = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const doctorContract = new ethers.Contract(
+      "0x505b7416C58CF8C2E7e713F0c3b6ed9bEFC8109D",
+      createdoctorabi,
+      signer
+    );
+    const totalDoctors = await doctorContract.doctorCount();
+    const totalDoctorsCount = totalDoctors.toNumber();
+    for (let i = 0; i < totalDoctorsCount; i++) {
+      doctorContract._doctors(i).then((doctorAddress: any) => {
+        doctorArray.push({id:i,contractAdd:doctorAddress});
+        setUnverifiedDoctors((unverifiedDoctors) => [...unverifiedDoctors]);
+      });
+    }
+  };
+
+  const checkUser = (e) => {
+    console.log("userWalletAddress" + userWalletAddress);
+    e.preventDefault();
+    if (password == "root") {
+      console.log("Admin");
+      handleClick();
+    }
+  };
+
+  const handleClick = async () => {
+    setShowCards(true);
+    getAllDoctors();
+  };
+
+  useEffect (() => {
+    const signIn = () => {
+      const authstate = auth?.signIn();
+      authstate.then((res) => {
+        setUserId(res.userId);
+        setloggedIn(true);
+      });
+    };
+  },[]);
+
+  return (
+    <>
+      {!showCards && (
+        <Flex
+        align={"center"}
+        justify={"center"}
+        bg={useColorModeValue("gray.50", "gray.800")}
+        flexDir={"row"}
+        justifyContent={"space-evenly"}
+      >
+        <Stack>
+          <Stack
+            spacing={4}
+            w={"full"}
+            maxW={"md"}
+            rounded={"xl"}
+            boxShadow={"lg"}
+            p={6}
+            my={12}
+          >
+            <Image src={LockSVG} width="250px"></Image>
+          </Stack>
+        </Stack>
+        <Stack
+          spacing={4}
+          w={"full"}
+          maxW={"md"}
+          bg={useColorModeValue("white", "gray.700")}
+          rounded={"xl"}
+          boxShadow={"lg"}
+          p={6}
+          my={12}
+        >
+          <Heading lineHeight={1.1} fontSize={{ base: "2xl", md: "3xl" }}>
+            Enter Admin Security Key
+          </Heading>
+          <FormControl id="password" isRequired>
+            <FormLabel>Password</FormLabel>
+            <Input
+              type="password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            />
+          </FormControl>
+          <Stack spacing={6}>
+            <Button
+              bg={"blue.400"}
+              color={"white"}
+              _hover={{
+                bg: "blue.500",
+              }}
+              onClick={(e) => {checkUser(e)}}
+            >
+              Submit
+            </Button>
+          </Stack>
+        </Stack>
+      </Flex>
+      )}
+      {showCards && (
+        <Grid
+          templateRows="repeat(2, 1fr)"
+          templateColumns="repeat(4, 1fr)"
+          gap={4}
+        >
+          {doctorArray.map((doctor: any, index: any) => {
+            console.log(doctor.id);
+            return (
+              <GridItem rowSpan={1} colSpan={1}>
+                <DoctorCard key={doctor.id} doctor={doctor.contractAdd} eleNo={index} />
+              </GridItem>
+            );
+          })}
+        </Grid>
+      )}
+    </>
+  );
 };
 
 export default Admin;
