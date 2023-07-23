@@ -20,7 +20,7 @@ import DoctorCard from "@/components/DoctorCard/DoctorCard";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { get } from "http";
 import LockSVG from "../../assets/lock-svgrepo-com.svg";
-import { Auth } from "@polybase/auth";
+import { useAuth } from "@polybase/react";
 var doctorArray: any = [];
 
 const Admin = () => {
@@ -28,11 +28,10 @@ const Admin = () => {
   const [unverifiedDoctors, setUnverifiedDoctors] = useState([]);
   const [showCards, setShowCards] = useState(false);
   const [checkAdmin, setChecked] = useState(false);
-  const [userWalletAddress, setUserWalletAddress] = useState("");
   const [loggedIn, setloggedIn] = useState(false);
   const [owner, setOwner] = useState("");
   const [password, setPassword] = useState("");
-  const auth = typeof window !== "undefined" ? new Auth() : null;
+  const { auth, state, loading } = useAuth();
 
   const getAllDoctors = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -51,11 +50,13 @@ const Admin = () => {
       });
     }
   };
-
   const checkUser = (e) => {
-    console.log("userWalletAddress" + userWalletAddress);
     e.preventDefault();
-    if (password == "root") {
+    if (
+      password == "root" &&
+      (state.userId === "0x12d0ad7d21bdbe7e05ab0add973c58fb48b52ae5" ||
+        state.userId === "0xaE93A422CB100d43f0F6bc5F0a8322119FD74385")
+    ) {
       console.log("Admin");
       handleClick();
     }
@@ -65,16 +66,6 @@ const Admin = () => {
     setShowCards(true);
     getAllDoctors();
   };
-
-  useEffect(() => {
-    const signIn = () => {
-      const authstate = auth?.signIn();
-      authstate.then((res) => {
-        setUserId(res.userId);
-        setloggedIn(true);
-      });
-    };
-  }, []);
 
   return (
     <>
