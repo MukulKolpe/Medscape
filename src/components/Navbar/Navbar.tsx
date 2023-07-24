@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import usersideabi from "../../utils/usersideabi.json";
+import createdoctorabi from "../../utils/createdoctorabi.json";
 import { useRouter } from "next/router";
 import {
   Box,
@@ -34,6 +35,7 @@ export default function Navbar() {
   const [userId, setUserId] = useState("");
   const { auth, state, loading } = useAuth();
   const [isLoggedIn] = useIsAuthenticated();
+  const [role, setRole] = useState("unregistered");
 
   const router = useRouter();
 
@@ -59,9 +61,48 @@ export default function Navbar() {
     });
   };
 
+  const determineRole = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const contract = new ethers.Contract(
+      "0xfFc691e5B23633A683E82fad9dAd858bD1B9875D",
+      createdoctorabi,
+      signer
+    );
+    const usersidecontract = new ethers.Contract(
+      "0x353cefb7f0a4B01e88D4C6d772FE9e5FA808DFDf",
+      usersideabi,
+      signer
+    );
+    if (state?.userId == "0x9ba8ec2b3f019227841c3265f6ce314c03b03daf" || state.userId === "0x12d0ad7d21bdbe7e05ab0add973c58fb48b52ae5") {
+      setRole("admin");
+    } else {
+      contract.doctorsMapping(state?.userId).then((res) => {
+        console.log("result is: " + res);
+        if (res) {
+          setRole("doctor");
+        } else {
+          usersidecontract.checkPatientRegistered(state?.userId).then((res) => {
+            if (res) {
+              setRole("patient");
+              console.log("f this: " + role);
+            }
+          });
+        }
+      });
+    }
+  };
+
   const signOut = () => {
     auth.signOut();
   };
+
+  useEffect(() => {
+    if (state?.userId) {
+      console.log("state is (inside useEffect): " + state?.userId);
+      determineRole();
+    }
+  }, [state?.userId]);
 
   return (
     <>
@@ -91,30 +132,62 @@ export default function Navbar() {
           </HStack>
           <Flex alignItems={"center"}>
             <div style={{ display: "flex" }}>
-              <HStack
-                as={"nav"}
-                spacing={4}
-                display={{ base: "none", md: "flex" }}
-                marginRight={4}
-              >
-                <Link href="/book">
-                  <Button w="full" variant="ghost">
-                    Book Appointment
-                  </Button>
-                </Link>
-              </HStack>
-              <HStack
-                as={"nav"}
-                spacing={4}
-                display={{ base: "none", md: "flex" }}
-                marginRight={4}
-              >
-                <Link href="/profile">
-                  <Button w="full" variant="ghost">
-                    Profile
-                  </Button>
-                </Link>
-              </HStack>
+              {role != "unregistered" && (
+                <HStack
+                  as={"nav"}
+                  spacing={4}
+                  display={{ base: "none", md: "flex" }}
+                  marginRight={4}
+                >
+                  <Link href="/book">
+                    <Button w="full" variant="ghost">
+                      Book Appointment
+                    </Button>
+                  </Link>
+                </HStack>
+              )}
+              {role == "admin" && (
+                <HStack
+                  as={"nav"}
+                  spacing={4}
+                  display={{ base: "none", md: "flex" }}
+                  marginRight={4}
+                >
+                  <Link href="/admin">
+                    <Button w="full" variant="ghost">
+                      Admin
+                    </Button>
+                  </Link>
+                </HStack>
+              )}
+              {(role == "doctor" || role == "patient") && (
+                <HStack
+                  as={"nav"}
+                  spacing={4}
+                  display={{ base: "none", md: "flex" }}
+                  marginRight={4}
+                >
+                  <Link href="/profile">
+                    <Button w="full" variant="ghost">
+                      Profile
+                    </Button>
+                  </Link>
+                </HStack>
+              )}
+              {(role == "doctor") && (
+                <HStack
+                  as={"nav"}
+                  spacing={4}
+                  display={{ base: "none", md: "flex" }}
+                  marginRight={4}
+                >
+                  <Link href="/doctor-profile">
+                    <Button w="full" variant="ghost">
+                      Doctor's Profile
+                    </Button>
+                  </Link>
+                </HStack>
+              )}
             </div>
             {!isLoggedIn ? (
               <Button

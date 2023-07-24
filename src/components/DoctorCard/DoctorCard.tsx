@@ -22,11 +22,11 @@ import {
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import doctorabi from "../../utils/doctorabi.json";
-import createDoctorabi from "../../utils/createdoctorabi.json"; 
+import createDoctorabi from "../../utils/createdoctorabi.json";
 import { ethers } from "ethers";
 import { useAuth } from "@polybase/react";
 
-export default function DoctorCard({ doctor,key,eleNo }) {
+export default function DoctorCard({ doctor, key, eleNo }) {
   console.log("address: " + doctor);
   console.log("key: " + key);
   console.log("eleNo: " + eleNo);
@@ -159,7 +159,11 @@ export default function DoctorCard({ doctor,key,eleNo }) {
     console.log("currently at: " + eleNo);
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract("0xC51ccF18c58A07863c5daBfC9502b8cDAd10fE7a", createDoctorabi, signer);
+    const contract = new ethers.Contract(
+      "0xfFc691e5B23633A683E82fad9dAd858bD1B9875D",
+      createDoctorabi,
+      signer
+    );
     const tx = contract.verifyDoctor(eleNo);
     console.log(tx);
   };
