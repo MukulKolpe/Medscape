@@ -96,6 +96,9 @@ const BookAppointment = () => {
     );
     const totalDoctors = await doctorContract.getVerifiedDoctorCount();
     const totalDoctorsCount = totalDoctors.toNumber();
+    while(doctorArray.length > 0){
+      doctorArray.pop();
+    }
     for (let i = 0; i < totalDoctorsCount; i++) {
       doctorContract._verifiedDoctors(i).then((doctorAddress: any) => {
         doctorArray.push({ id: i, contractAdd: doctorAddress });
