@@ -9,7 +9,7 @@ contract Doctor is Ownable {
     uint256 public age;
     uint256 public yoe;
     string public dob;
-    address payable createdBy;
+    address public createdBy;
     string public speciality;
     string public degreeURL;
     string public licenseNum;
