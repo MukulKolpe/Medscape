@@ -37,7 +37,7 @@ const Admin = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const doctorContract = new ethers.Contract(
-      "0xC51ccF18c58A07863c5daBfC9502b8cDAd10fE7a",
+      "0xfFc691e5B23633A683E82fad9dAd858bD1B9875D",
       createdoctorabi,
       signer
     );
