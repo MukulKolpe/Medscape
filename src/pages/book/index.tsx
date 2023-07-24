@@ -96,7 +96,7 @@ const BookAppointment = () => {
     );
     const totalDoctors = await doctorContract.getVerifiedDoctorCount();
     const totalDoctorsCount = totalDoctors.toNumber();
-    while(doctorArray.length > 0){
+    while (doctorArray.length > 0) {
       doctorArray.pop();
     }
     for (let i = 0; i < totalDoctorsCount; i++) {
