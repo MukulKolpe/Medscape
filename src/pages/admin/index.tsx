@@ -37,7 +37,7 @@ const Admin = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
     const doctorContract = new ethers.Contract(
-      "0x505b7416C58CF8C2E7e713F0c3b6ed9bEFC8109D",
+      "0xC51ccF18c58A07863c5daBfC9502b8cDAd10fE7a",
       createdoctorabi,
       signer
     );
@@ -52,10 +52,12 @@ const Admin = () => {
   };
   const checkUser = (e) => {
     e.preventDefault();
+    console.log(state?.userId);
+    console.log("0x9Ba8eC2b3f019227841C3265f6Ce314c03B03Daf");
     if (
       password == "root" &&
       (state.userId === "0x12d0ad7d21bdbe7e05ab0add973c58fb48b52ae5" ||
-        state.userId === "0xaE93A422CB100d43f0F6bc5F0a8322119FD74385")
+        state.userId === "0x9ba8ec2b3f019227841c3265f6ce314c03b03daf")
     ) {
       console.log("Admin");
       handleClick();

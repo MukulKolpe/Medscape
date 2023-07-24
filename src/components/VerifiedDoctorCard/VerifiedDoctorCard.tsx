@@ -19,14 +19,17 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
+  Input,
+  Img,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import doctorabi from "../../utils/doctorabi.json";
-import createDoctorabi from "../../utils/createdoctorabi.json"; 
+import createDoctorabi from "../../utils/createdoctorabi.json";
+import usersideabi from "../../utils/usersideabi.json";
 import { ethers } from "ethers";
 import { useAuth } from "@polybase/react";
 
-export default function DoctorCard({ doctor,key,eleNo }) {
+export default function VerifiedDoctorCard({ doctor, key, eleNo }) {
   console.log("address: " + doctor);
   console.log("key: " + key);
   console.log("eleNo: " + eleNo);
@@ -41,7 +44,12 @@ export default function DoctorCard({ doctor,key,eleNo }) {
   const [licensenum, setLicensenum] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
+  const [doctorWalletAddress, setDoctorWalletAddress] = useState("");
   const [isVerified, setIsVerifed] = useState(false);
+  const [patientName, setPatientName] = useState("");
+  const [patientWalletAddress, setPatientWalletAddress] = useState("");
+  const [appDate, setAppDate] = useState("");
+  const [appTime, setAppTime] = useState("");
 
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -153,21 +161,56 @@ export default function DoctorCard({ doctor,key,eleNo }) {
       .catch((err) => {
         console.log(err);
       });
+
+    contract
+      .createdBy()
+      .then((result) => {
+        setDoctorWalletAddress(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
-  const approveDoctor = async () => {
-    console.log("currently at: " + eleNo);
+  const getPatientDetails = async () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner();
-    const contract = new ethers.Contract("0xC51ccF18c58A07863c5daBfC9502b8cDAd10fE7a", createDoctorabi, signer);
-    const tx = contract.verifyDoctor(eleNo);
-    console.log(tx);
+    const usersideContract = new ethers.Contract(
+      "0x353cefb7f0a4B01e88D4C6d772FE9e5FA808DFDf",
+      usersideabi,
+      signer
+    );
+    usersideContract.userAddressMapping(state.userId).then((result) => {
+      setPatientName(result.name);
+      console.log("name: " + result.name);
+      setPatientWalletAddress(result.patientWalletAddress);
+      console.log("wallet: " + result.patientWalletAddress);
+    });
+  };
+
+  const BookAppointment = async () => {
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    const usersideContract = new ethers.Contract(
+      "0x353cefb7f0a4B01e88D4C6d772FE9e5FA808DFDf",
+      usersideabi,
+      signer
+    );
+    usersideContract
+      .bookAppointment(name, patientName, appDate, appTime, doctorWalletAddress)
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [size, setSize] = useState("md");
 
   const handleSizeClick = (newSize) => {
+    getPatientDetails();
     setSize(newSize);
     onOpen();
   };
@@ -183,7 +226,7 @@ export default function DoctorCard({ doctor,key,eleNo }) {
           rounded={"md"}
           overflow={"hidden"}
         >
-          <Image
+          <Img
             h={"120px"}
             w={"full"}
             src={
@@ -233,7 +276,6 @@ export default function DoctorCard({ doctor,key,eleNo }) {
                 <Text fontWeight={600}>Date of Birth: {dob}</Text>
               </Stack>
             </Stack>
-
             <Button
               w={"full"}
               mt={8}
@@ -246,31 +288,78 @@ export default function DoctorCard({ doctor,key,eleNo }) {
               }}
               onClick={() => handleSizeClick("xl")}
             >
-              View Medical Degree
-            </Button>
-            <Button
-              w={"full"}
-              mt={8}
-              bg={useColorModeValue("#151f21", "gray.900")}
-              color={"white"}
-              rounded={"md"}
-              _hover={{
-                transform: "translateY(-2px)",
-                boxShadow: "lg",
-              }}
-              onClick={() => approveDoctor()}
-            >
-              Approve
+              Book Appointment
             </Button>
             <Modal onClose={onClose} size={size} isOpen={isOpen}>
               <ModalOverlay />
               <ModalContent>
-                <ModalHeader>Medical Degree</ModalHeader>
+                <ModalHeader>Book Appointment</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <img src={degreeURL}></img>
+                  <Text mb="8px">Patient's Name</Text>
+                  <Input
+                    variant="filled"
+                    placeholder={`${patientName}`}
+                    mb={2}
+                    value={patientName}
+                    onChange={(e) => setPatientName(e.target.value)}
+                  />
+                  <Text mb="8px">Doctor's Name</Text>
+                  <Input
+                    variant="filled"
+                    placeholder={`${name}`}
+                    mb={2}
+                    value={name}
+                    onChange={(e) => {
+                      setName(e.target.value);
+                    }}
+                  />
+                  <Text mb="8px">Patient's Wallet Address: </Text>
+                  <Input
+                    variant="filled"
+                    placeholder={`${state?.userId}`}
+                    mb={2}
+                    value={patientWalletAddress}
+                    onChange={(e) => {
+                      setPatientWalletAddress(e.target.value);
+                    }}
+                  />
+                  <Text mb="8px">Doctor's Wallet Address:</Text>
+                  <Input
+                    variant="filled"
+                    placeholder={`${doctor}`}
+                    mb={2}
+                    value={doctorWalletAddress}
+                    onChange={(e) => setDoctorWalletAddress(e.target.value)}
+                  />
+                  <Text mb="8px">Choose appropriate Date: </Text>
+                  <Input
+                    placeholder="Select Date"
+                    size="md"
+                    type="date"
+                    variant={"filled"}
+                    value={appDate}
+                    onChange={(e) => {
+                      setAppDate(e.target.value);
+                    }}
+                  />
+                  <Text mb="8px">Choose appropriate Time: </Text>
+                  <Input
+                    placeholder="Select Time"
+                    size="md"
+                    type="time"
+                    variant={"filled"}
+                    value={appTime}
+                    onChange={(e) => {
+                      setAppTime(e.target.value);
+                    }}
+                  />
                 </ModalBody>
                 <ModalFooter>
+                  <Button colorScheme="blue" mr={3} onClick={BookAppointment}>
+                    {" "}
+                    Book{" "}
+                  </Button>
                   <Button onClick={onClose}>Close</Button>
                 </ModalFooter>
               </ModalContent>
