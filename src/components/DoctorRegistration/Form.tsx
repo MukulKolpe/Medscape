@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   Progress,
   Box,
@@ -27,9 +27,13 @@ import {
   VisuallyHidden,
   Text,
   Stack,
+  ring,
 } from "@chakra-ui/react";
 
 import { useToast } from "@chakra-ui/react";
+import { useAuth } from "@polybase/react";
+import { stringify } from "querystring";
+import { Clicker_Script } from "next/font/google";
 
 const Form1 = () => {
   const [show, setShow] = React.useState(false);
@@ -106,6 +110,32 @@ const Form1 = () => {
 };
 
 const Form2 = () => {
+  const inputRef = useRef(null);
+  const { state } = useAuth();
+  const [displayImage, setDisplayImage] = useState();
+  const changeHandler = () => {
+    setDisplayImage(inputRef.current?.files[0]);
+  };
+  const uploadIPFS = async () => {
+    const form = new FormData();
+    form.append("file", displayImage ? displayImage : "");
+
+    const options = {
+      method: "POST",
+      body: form,
+      headers: {
+        Authorization: process.env.NEXT_PUBLIC_NFTPort_API_KEY,
+      },
+    };
+
+    await fetch("https://api.nftport.xyz/v0/files", options)
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => console.error(err));
+  };
+
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal" mb="2%">
@@ -156,6 +186,7 @@ const Form2 = () => {
                 strokeLinejoin="round"
               />
             </Icon>
+            <Text>{displayImage?.name}</Text>
             <Flex
               fontSize="sm"
               color="gray.600"
@@ -181,9 +212,15 @@ const Form2 = () => {
                   },
                 }}
               >
-                <span>Upload an Image</span>
+                <span>{"Upload an Image"}</span>
                 <VisuallyHidden>
-                  <input id="file-upload" name="file-upload" type="file" />
+                  <input
+                    id="file-upload"
+                    name="file-upload"
+                    type="file"
+                    ref={inputRef}
+                    onChange={changeHandler}
+                  />
                 </VisuallyHidden>
               </chakra.label>
               <Text pl={1}>or drag and drop</Text>
@@ -200,6 +237,8 @@ const Form2 = () => {
           </Stack>
         </Flex>
       </FormControl>
+
+      <Button onClick={uploadIPFS}>Upload to IPFS</Button>
 
       <FormControl mr="5%" mt="2%">
         <FormLabel htmlFor="datetime-local" fontWeight={"normal"}>
@@ -229,6 +268,30 @@ const Form2 = () => {
 };
 
 const Form3 = () => {
+  const inputRef = useRef(null);
+  const [displayImage, setDisplayImage] = useState();
+  const changeHandler = () => {
+    setDisplayImage(inputRef.current?.files[0]);
+  };
+  const uploadIPFS = async () => {
+    const form = new FormData();
+    form.append("file", displayImage ? displayImage : "");
+
+    const options = {
+      method: "POST",
+      body: form,
+      headers: {
+        Authorization: process.env.NEXT_PUBLIC_NFTPort_API_KEY,
+      },
+    };
+
+    await fetch("https://api.nftport.xyz/v0/files", options)
+      .then((response) => response.json())
+      .then((response) => {
+        console.log(response);
+      })
+      .catch((err) => console.error(err));
+  };
   return (
     <>
       <Heading w="100%" textAlign={"center"} fontWeight="normal">
@@ -279,6 +342,7 @@ const Form3 = () => {
                   strokeLinejoin="round"
                 />
               </Icon>
+              <Text>{displayImage?.name}</Text>
               <Flex
                 fontSize="sm"
                 color="gray.600"
@@ -306,7 +370,13 @@ const Form3 = () => {
                 >
                   <span>Upload an Image</span>
                   <VisuallyHidden>
-                    <input id="file-upload" name="file-upload" type="file" />
+                    <input
+                      id="file-upload"
+                      name="file-upload"
+                      type="file"
+                      ref={inputRef}
+                      onChange={changeHandler}
+                    />
                   </VisuallyHidden>
                 </chakra.label>
                 <Text pl={1}>or drag and drop</Text>
@@ -323,6 +393,7 @@ const Form3 = () => {
             </Stack>
           </Flex>
         </FormControl>
+        <Button onClick={uploadIPFS}>Upload to IPFS</Button>
         <FormControl mr="2%">
           <FormLabel htmlFor="license_number" fontWeight={"normal"}>
             License Number
