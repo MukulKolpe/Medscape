@@ -28,6 +28,7 @@ import createDoctorabi from "../../utils/createdoctorabi.json";
 import usersideabi from "../../utils/usersideabi.json";
 import { ethers } from "ethers";
 import { useAuth } from "@polybase/react";
+import { useToast } from "@chakra-ui/react";
 
 export default function VerifiedDoctorCard({ doctor, key, eleNo }) {
   console.log("address: " + doctor);
@@ -50,6 +51,7 @@ export default function VerifiedDoctorCard({ doctor, key, eleNo }) {
   const [patientWalletAddress, setPatientWalletAddress] = useState("");
   const [appDate, setAppDate] = useState("");
   const [appTime, setAppTime] = useState("");
+  const toast = useToast();
 
   useEffect(() => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -196,14 +198,23 @@ export default function VerifiedDoctorCard({ doctor, key, eleNo }) {
       usersideabi,
       signer
     );
-    usersideContract
-      .bookAppointment(name, patientName, appDate, appTime, doctorWalletAddress)
-      .then((result) => {
-        console.log(result);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    const tx = await usersideContract.bookAppointment(
+      name,
+      patientName,
+      appDate,
+      appTime,
+      doctorWalletAddress
+    );
+    await tx.wait();
+    toast({
+      title: "Appointment Booked! ",
+      description:
+        "We will notify you once the doctor accepts your appointment.",
+      status: "success",
+      duration: 9000,
+      isClosable: true,
+    });
+    onClose();
   };
 
   const { isOpen, onOpen, onClose } = useDisclosure();
