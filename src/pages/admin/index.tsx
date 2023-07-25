@@ -10,12 +10,12 @@ import {
   Flex,
   Stack,
   useColorModeValue,
-  Image,
   Heading,
   FormControl,
   FormLabel,
   Input,
 } from "@chakra-ui/react";
+import Image from "next/image";
 import DoctorCard from "@/components/DoctorCard/DoctorCard";
 import type { InferGetServerSidePropsType, GetServerSideProps } from "next";
 import { get } from "http";
@@ -89,7 +89,7 @@ const Admin = () => {
               p={6}
               my={12}
             >
-              <Image src={LockSVG} width="250px"></Image>
+              <Image src={LockSVG} width={250} alt="Lock SVG" />
             </Stack>
           </Stack>
           <Stack
